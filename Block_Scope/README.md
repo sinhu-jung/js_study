@@ -7,7 +7,7 @@
     - 뭐의 범위? -> 변수의 유효범위
     - 즉 변수의 유효범위가 함수에 의해서만 생길 수 있었다.
 
-```
+```js
 (function () {
     var a = 10;
     (function (){
@@ -22,7 +22,7 @@ console.log(a); // ReferenceError: a is not defined
 - 하지만 ES6 부터 블락스코프(Block Scope) 가 생겼다.
     - 블락({})에 의해 생기는 유효범위가 결정된다.
 
-```
+```js
 {
     let a = 10;
     {
@@ -45,7 +45,7 @@ console.log(a); // ReferenceError: a is not defined
 - 값이 될 수 있는 경우 -> 식
 - 값
 
-```
+```js
 if (true) {
     let a = 10
     if (true) {
@@ -73,3 +73,101 @@ TDZ는 let이나 const에 대해서 해당 변수를 선언한 위치에 오기 
 다만 tdz 라는게 있어서 레퍼런스 에러를 띄워 준다.
 
 ### this
+
+```js
+var value = 0
+var obj = {
+  value: 1,
+  setValue: function () {
+    this.value = 2;
+    (function () {
+      this.value = 3
+    })();
+  }
+}
+obj.setValue()
+console.log(value) // 3
+console.log(obj.value) //2
+```
+
+위의 코드를 보면 생각 하던 방식과 다르게 동작 하는 것을 볼 수 있다.
+왜냐 하면 javascript 에서는 메서드 혹은 함수가 호출 될 때 현재 호출하는 메서드를 보유한 객체가 this로 연결된다.
+현재 호출중인 메서드를 보유한 객체가 없다면 전역객체가 연결된다.
+
+따라서 위의 코드에서 첫번째 this를 가지고 있는 함수는 obj에서 보유하고 있으므로 해당 this는 obj를 가리키지만
+두번째 this는 보유한 객체가 없기 때문에 전역(window) 객체를 가리키기 때문이다.
+
+위의 this를 원하는 방식으로 실행하는 방법은 여러가지가 있다.
+
+1. 변수에 this를 할당하여 사용하는 방법
+```js
+var value = 0
+var obj = {
+  value: 1,
+  setValue: function () {
+    var self = this
+    this.value = 2;
+    (function () {
+      this.value = 3
+    })();
+  }
+}
+obj.setValue()
+console.log(value) // 0
+console.log(obj.value) //3
+```
+
+2. call을 사용하는 방법
+```js
+var value = 0
+var obj = {
+  value: 1,
+  setValue: function () {
+    this.value = 2;
+    (function () {
+      this.value = 3
+    }).call(this);
+  }
+}
+obj.setValue()
+console.log(value) // 0
+console.log(obj.value) //3
+```
+
+3. apply를 사용하는 방법
+```js
+var value = 0
+var obj = {
+  value: 1,
+  setValue: function () {
+    this.value = 2;
+    (function () {
+      this.value = 3
+    }).apply(this);
+  }
+}
+obj.setValue()
+console.log(value) // 0
+console.log(obj.value) //3
+```
+4. bind를 사용하는 방법
+```js
+var value = 0
+var obj = {
+  value: 1,
+  setValue: function () {
+    this.value = 2;
+    (function () {
+      this.value = 3
+    }).bind(this)();
+  }
+}
+obj.setValue()
+console.log(value) // 0
+console.log(obj.value) //3
+```
+
+- call, bind, apply 차이점 
+    - call, apply 는 둘다 함수를 실행하는 함수이다.
+    - call 과 apply의 차이점은 두번째 인자를 배열로 넣어주는지의 차이가 있다.
+    - bind는 call과 apply 와 다르게 함수를 실행하지 않고 bound 함수를 리턴한다.
