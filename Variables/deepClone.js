@@ -36,7 +36,7 @@ function deepClone(obj){
 
 const OBJ2 = deepClone(OBJ1);
 
-OBJ2.prop3.prop3 = true;
+OBJ2.prop1 = true;
 
 console.log(OBJ1);
 console.log(OBJ2);
