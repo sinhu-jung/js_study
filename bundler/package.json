@@ -1,0 +1,11 @@
+{
+	"name": "my-project",
+	"source": "src/index.html",
+	"scripts": {
+		"start": "parcel",
+		"build": "parcel build"
+	},
+	"dependencies": {
+		"parcel": "^2.15.2"
+	}
+}
